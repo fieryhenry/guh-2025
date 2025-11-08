@@ -11,26 +11,24 @@
 
 <body>
 
-  <h1>Clip Collide</h1>
+  <header>
+    <h1>Clip Collide</h1>
+  </header>
 
   <div class="wrapper">
     <div class="uploader">
-      <label for="files"><strong>Select files</strong></label><br>
+      <label for="files"><strong>Select files</strong></label>
+      <label for="files" class="label-button">Browse</label>
       <input class="files" id="files" type="file" multiple accept="audio/*">
       <div class="files-list" aria-live="polite">
         <ul id="fileList"></ul>
-        <div id="summary"></div>
       </div>
     </div>
 
-    <br>
     <button id="collide" class="collide" type="submit" name="collide" style="display: none;">Collide!</button>
 
-    <br>
     <audio id="audio" controls style="display: none;"></audio>
-
   </div>
-
 
 </body>
 

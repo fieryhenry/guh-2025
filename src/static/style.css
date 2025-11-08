@@ -1,76 +1,109 @@
-body {
-  font-family: sans-serif;
-  padding: 20px;
-}
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 30px;
+  background-color: #f9f9f9; /* Light background color */
+  color: #333; /* Text color */
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.wrapper {
+  max-width: 600px; /* Max width for content */
+  margin: 0 auto; /* Center align */
+  padding: 20px;
+  background: #fff; /* White background for content */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 
 .uploader {
   border: 1px dashed #bbb;
-  padding-top: 16px;
-  padding-left: 16px;
+  padding: 20px;
   border-radius: 8px;
-  display: inline-block;
-  width: 100%;
+  background-color: #f1f1f1; /* Light background for uploader */
 }
+
 .uploader label {
-  display: inline-block;
+  display: block;
+  font-weight: bold; /* Bolder label */
 }
+
 .files-list {
   margin-top: 10px;
   font-size: 14px;
 }
+
 .files-list li {
   margin: 4px 0;
-}
-
-.prog-wrap {
-  background-color: #f1f1f1;
-  border-radius: 6px;
-  overflow: hidden;
-  height: 10px;
-  width: 100px;
-}
-
-.prog {
-  width: 0%;
-  height: 100%;
-  background: #1e90ff;
-}
-
-.meta {
-  width: 100%;
-  font-size: 13px;
-  margin-top: 6px;
-  color: #333;
-}
-
-.audio-list-item {
-  display: flex;
-  flex-direction: column;
-  padding: 6px 0;
+  padding: 6px;
+  border-radius: 4px; /* Rounded list items */
+  background: #e7e7e7; /* Light background for list items */
 }
 
 .collide {
+  margin-top: 20px; /* Space above button */
   padding: 12px 20px;
   background-color: #1e90ff; /* Button color */
-  color: white; /* Text color */
-  border: none; /* Remove default border */
-  border-radius: 6px; /* Rounded corners */
-  font-size: 16px; /* Font size */
-  cursor: pointer; /* Pointer cursor on hover */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
   transition:
     background-color 0.3s ease,
-    transform 0.2s ease; /* Smooth transition */
+    transform 0.2s ease;
 }
 
 .collide:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.collide:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.5);
+}
+
+audio {
+  display: block; /* Ensure it's a block element */
+  margin: 20px auto; /* Center it horizontally with auto margins */
+  width: 100%; /* Make it responsive */
+  max-width: 500px; /* Set a max width for larger screens */
+  border-radius: 6px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.files {
+  display: none; /* Hide the original input */
+}
+
+.label-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #1e90ff; /* Button color */
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  text-align: center; /* Center text */
+}
+
+.label-button:hover {
   background-color: #0056b3; /* Darker shade for hover effect */
   transform: scale(1.05); /* Slight scaling effect on hover */
 }
 
-.collide:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.5); /* Custom focus ring */
+.meta {
+  padding: 5px;
 }
