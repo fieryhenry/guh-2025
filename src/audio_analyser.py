@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 import soundfile as sf
-import pydub
+from pydub import AudioSegment
 
 
 def read_file(filename):
@@ -32,11 +32,12 @@ def match_bpm(audiosource, audioreference):
     return librosa.effects.time_stretch(audiosource[0], rate=multiply_factor)
 
 
-def write_audio_data(audiodata, output_file, sample_rate=44100):
+def write_audio_data(audiodata, output_file, sample_rate=int(44100 / 2)):
     sf.write(output_file, audiodata, sample_rate, subtype="PCM_24")
 
 
 def pitch_shift(audiodata, steps):
+    print(f"Pitch shift by {steps} steps")
     return librosa.effects.pitch_shift(y=audiodata[0], sr=audiodata[1], n_steps=steps)
 
 
@@ -47,24 +48,48 @@ def find_key_difference(source_audiodata, reference_audiodata):
     return librosa.note_to_midi(key2) - librosa.note_to_midi(key1)
 
 
-def merge_audio(audiodata1, audiodata2):
-    return np.array(librosa.util.stack([audiodata1[0], audiodata2[0]]), audiodata2[1])
+def merge_audio(audiofile1, audiofile2):
+    audio1 = AudioSegment.from_file(audiofile1, format="wav")
+    audio2 = AudioSegment.from_file(audiofile2, format="wav")
+    merged = audio1.overlay(audio2)
+    merged.export("temp1.wav", format="wav")
+    return read_file("temp1.wav")
 
-def pad_audio(source_audio, reference_audio):
-    write_audio_data(source_audio, "temp1.wav")
-    write_audio_
-    pass
+
+def average_volume(audiodata):
+    return np.max(audiodata[0])
+
+def scale_volume(source_audiodata, reference_audiodata):
+    write_audio_data(source_audiodata, "temp1.wav")
+    write_audio_data(source_audiodata, "temp2.wav")
+    file1 = AudioSegment.from_wav("temp1.wav")
+    file2 = AudioSegment.from_wav("temp2.wav")
+
+    scaled = file1 + (average_volume(reference_audiodata) - average_volume(source_audiodata))
+
+    scaled.export("temp1.wav",format="wav")
+    return read_file("temp1.wav")
+    
 
 
 if __name__ == "__main__":
-    file1 = "piano Edit 1 Export 1.wav"
+    file3 = "piano Edit 1 Export 1.wav"
     file2 = "Pixelated Decay.wav"
-    file3 = "H3ll0,W0rlD Export 4.wav"
+    file1 = "H3ll0,W0rlD Export 4.wav"
+
     print(get_key(split_audio(read_file(file3), 0, 30)))
+
     bpm_match = match_bpm(read_file(file2), read_file(file1))
     write_audio_data(bpm_match, "out.wav")
     bpm_match = read_file("out.wav")
 
     bpm_match = pitch_shift(bpm_match, find_key_difference(read_file(file2), bpm_match))
+    write_audio_data(bpm_match, "out.wav")
+    pitch_match = pitch_shift(
+        read_file("out.wav"),
+        find_key_difference(read_file("out.wav"), read_file(file1)),
+    )
+    write_audio_data(pitch_match, "out.wav")
 
-    write_audio_data(merged, "out.wav")
+    merged = merge_audio(file1, "out.wav")
+    write_audio_data(merged[0], "out.wav")
