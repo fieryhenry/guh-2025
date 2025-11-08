@@ -72,6 +72,8 @@ function uploadSingleFile(file, onProgress) {
   });
 }
 
+var new_files = [];
+
 input.addEventListener('change', () => {
   fileList.innerHTML = '';
   const files = Array.from(input.files);
@@ -104,6 +106,10 @@ input.addEventListener('change', () => {
         const parts = [];
         if (info.genre) parts.push(`Genre: ${info.genre}`);
         if (typeof info.tempo !== 'undefined') parts.push(`Tempo: ${info.tempo}`);
+        let filename = info.filename;
+
+        new_files.push(info);
+        
         meta.textContent = parts.join(' • ');
       } else {
         // if server returned other shape, show it
@@ -119,4 +125,33 @@ input.addEventListener('change', () => {
 
   // reset input so same files can be selected again if desired
   input.value = '';
+});
+
+let collide = document.getElementById("collide");
+
+collide.addEventListener('click', () => {
+  fetch('/collide', {
+        method: 'POST', // Use the POST method to send data
+        headers: {
+            'Content-Type': 'application/json', // Specify the content type
+        },
+        body: JSON.stringify(new_files), // Convert the object to JSON
+    })
+    .then(response => response.blob()) // Parse the JSON response
+    .then(blob => {
+      const audioUrl = URL.createObjectURL(blob);
+        
+        // Create an HTML audio element to play the audio
+        const audioElement = document.createElement('audio');
+        audioElement.src = audioUrl;
+        audioElement.controls = true; // Add controls for play/pause
+        document.body.appendChild(audioElement); // Append to the body or desired element
+
+        // Optionally, play the audio automatically
+        audioElement.play();
+    })
+    .catch((error) => {
+        console.error('Error:', error); // Handle any errors
+    });
+  
 });

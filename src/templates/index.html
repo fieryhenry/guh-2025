@@ -13,13 +13,19 @@
 
   <h1>NAME</h1>
 
-  <div class="uploader">
-    <label for="files"><strong>Select files</strong></label><br>
-    <input id="files" type="file" multiple accept="audio/*" />
-    <div class="files-list" aria-live="polite">
-      <ul id="fileList"></ul>
-      <div id="summary"></div>
+  <div class="wrapper">
+    <div class="uploader">
+      <label for="files"><strong>Select files</strong></label><br>
+      <input class="files" id="files" type="file" multiple accept="audio/*">
+      <div class="files-list" aria-live="polite">
+        <ul id="fileList"></ul>
+        <div id="summary"></div>
+      </div>
     </div>
+
+    <br>
+    <button id="collide" class="collide" type="submit" name="collide">Collide!</button>
+
   </div>
 
 
