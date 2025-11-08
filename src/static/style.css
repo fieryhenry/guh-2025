@@ -21,7 +21,6 @@ body {
   border-radius: 6px;
   overflow: hidden;
   height: 10px;
-  margin-left: auto;
   width: 100px;
 }
 
@@ -29,11 +28,6 @@ body {
   width: 0%;
   height: 100%;
   background: #1e90ff;
-}
-
-.status {
-  /* min-width: 120px; */
-  text-align: right;
 }
 
 .meta {
@@ -47,9 +41,4 @@ body {
   display: flex;
   flex-direction: column;
   padding: 6px 0;
-}
-
-.top-row {
-  display: flex;
-  align-items: center;
 }

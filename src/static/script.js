@@ -38,7 +38,7 @@ function createFileRow(file) {
   li.appendChild(meta);
 
   fileList.appendChild(li);
-  return { li, prog, status, meta };
+  return { li, prog, status, meta, progWrap };
 }
 
 // upload a single file using XMLHttpRequest to get progress, return parsed JSON
@@ -86,7 +86,7 @@ input.addEventListener('change', () => {
 
   // Start uploading each file (parallel). Wait for response per file and update UI.
   files.forEach(file => {
-    const { prog, status, meta } = createFileRow(file);
+    const { prog, status, meta, progWrap } = createFileRow(file);
     status.textContent = 'Uploading...';
 
     uploadSingleFile(file, (fraction) => {
@@ -94,6 +94,8 @@ input.addEventListener('change', () => {
     }).then(responseJson => {
       // responseJson expected: { { "genre": "...", "tempo": ... } }
       prog.style.width = '100%';
+      progWrap.style.display = 'none';
+      status.style.display = 'none';
       status.textContent = 'Done';
 
       const info = responseJson;
