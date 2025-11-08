@@ -9,7 +9,7 @@ pipe = pipeline("audio-classification", model="dima806/music_genres_classificati
 
 def classify(filepath: str):
     # Load the first 5 seconds of the audio file
-    waveform, sample_rate = librosa.load(filepath, sr=None, duration=5)
+    waveform, sample_rate = librosa.load(filepath, sr=None, duration=6)
     # Save the waveform to a temporary file to use with the pipeline
     temp_filepath = "temp_audio.wav"
     sf.write(temp_filepath, waveform, sample_rate)
