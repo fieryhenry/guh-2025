@@ -109,6 +109,7 @@ input.addEventListener('change', () => {
         let filename = info.filename;
 
         new_files.push(info);
+
         
         meta.textContent = parts.join(' • ');
       } else {
@@ -122,6 +123,11 @@ input.addEventListener('change', () => {
       console.error('Upload error', err);
     });
   });
+
+  
+  if (files.length != 0) {
+      document.getElementById("collide").style.display = "";
+  }
 
   // reset input so same files can be selected again if desired
   input.value = '';
@@ -140,12 +146,12 @@ collide.addEventListener('click', () => {
     .then(response => response.blob()) // Parse the JSON response
     .then(blob => {
       const audioUrl = URL.createObjectURL(blob);
-        
-        // Create an HTML audio element to play the audio
-        const audioElement = document.createElement('audio');
+
+        const audioElement = document.getElementById("audio");
         audioElement.src = audioUrl;
-        audioElement.controls = true; // Add controls for play/pause
-        document.body.appendChild(audioElement); // Append to the body or desired element
+       
+
+        audioElement.style.display = ""
 
         // Optionally, play the audio automatically
         audioElement.play();
