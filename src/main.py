@@ -30,7 +30,7 @@ def upload_file():
 
         val = genre_detection.classify(path)
 
-        return {"genre": val, "tempo": 120, "filename": filename}
+        return {"genre": val.title(), "tempo": 120, "filename": filename}
     return redirect(request.url)
 
 
