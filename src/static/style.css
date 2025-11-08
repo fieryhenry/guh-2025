@@ -2,11 +2,26 @@ body {
   font-family: sans-serif;
   padding: 20px;
 }
+* {
+  box-sizing: border-box;
+}
+
 .uploader {
   border: 1px dashed #bbb;
-  padding: 16px;
+  padding-top: 16px;
+  padding-left: 16px;
   border-radius: 8px;
   display: inline-block;
+  width: 100%;
+}
+.uploader label {
+  display: inline-block;
+  /* text-align: center; */
+  /* width: 100%; */
+}
+.files {
+  /* width: 100%; */
+  /* text-align: center; */
 }
 .files-list {
   margin-top: 10px;
@@ -41,4 +56,11 @@ body {
   display: flex;
   flex-direction: column;
   padding: 6px 0;
+}
+
+.wrapper {
+}
+
+.collide {
+  width: 100%;
 }
