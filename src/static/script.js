@@ -75,16 +75,14 @@ function uploadSingleFile(file, onProgress) {
 var new_files = [];
 
 input.addEventListener('change', () => {
-  fileList.innerHTML = '';
+  // fileList.innerHTML = '';
   const files = Array.from(input.files);
   if (files.length === 0) {
-    summary.textContent = '';
+    // summary.textContent = '';
     return;
   }
 
-  let total = 0;
-  files.forEach(f => total += f.size);
-  summary.textContent = `${files.length} file(s), total ${formatBytes(total)}`;
+
 
   // Start uploading each file (parallel). Wait for response per file and update UI.
   files.forEach(file => {
@@ -129,6 +127,7 @@ input.addEventListener('change', () => {
       document.getElementById("collide").style.display = "";
   }
 
+  
   // reset input so same files can be selected again if desired
   input.value = '';
 });
