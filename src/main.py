@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, request
 from werkzeug.utils import secure_filename
 import uuid
 import os
+import genre_detection
 
 UPLOAD_FOLDER = "uploads/"
 
@@ -24,8 +25,12 @@ def upload_file():
         return redirect(request.url)
     if file:
         filename = secure_filename(f"{file.filename}-{uuid.uuid4()}")
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        return {"genre": "foo", "tempo": 120, "filename": filename}
+        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(path)
+
+        val = genre_detection.classify(path)
+
+        return {"genre": val, "tempo": 120, "filename": filename}
     return redirect(request.url)
 
 
@@ -42,10 +47,12 @@ def collide():
             ):  # TODO: probably fails with relative paths
                 with open(file_path, "rb") as f:
                     data = f.read()
+                    return data
                     file_data.append(data)
 
     # do some fancy processing with file_data, then return some data back
-    return file_data[0]
+    # return file_data[0]
+    return data
 
 
 if __name__ == "__main__":
