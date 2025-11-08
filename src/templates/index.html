@@ -4,11 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="style.css">
+  <title>NAME</title>
+  <link rel="stylesheet" href="static/style.css">
+  <script src="static/script.js" defer></script>
 </head>
 
 <body>
+
+  <h1>NAME</h1>
+
+  <div class="uploader">
+    <label for="files"><strong>Select files</strong></label><br>
+    <input id="files" type="file" multiple accept="audio/*" />
+    <div class="files-list" aria-live="polite">
+      <ul id="fileList"></ul>
+      <div id="summary"></div>
+    </div>
+  </div>
+
 
 </body>
 
