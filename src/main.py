@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import uuid
 import os
 import genre_detection
+import audio_analyser
 
 UPLOAD_FOLDER = "uploads/"
 
@@ -28,9 +29,17 @@ def upload_file():
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(path)
 
+        path = genre_detection.shorten(path, 6)
+
+        tempo = audio_analyser.get_bpm(audio_analyser.read_file(path))
+
         val = genre_detection.classify(path)
 
-        return {"genre": val.title(), "tempo": 120, "filename": filename}
+        return {
+            "genre": val.title(),
+            "tempo": round(int(tempo), -1),
+            "filename": filename,
+        }
     return redirect(request.url)
 
 
