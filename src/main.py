@@ -26,7 +26,7 @@ def upload_file():
     if file.filename == "":
         return "", 400
     if file:
-        filename = secure_filename(f"{file.filename}-{uuid.uuid4()}")
+        filename = secure_filename(f"{uuid.uuid4()}-{file.filename}")
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(path)
 

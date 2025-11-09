@@ -3,6 +3,8 @@ from transformers import pipeline
 import librosa
 import soundfile as sf
 
+import os
+
 # Initialize the audio classification pipeline
 pipe = pipeline("audio-classification", model="dima806/music_genres_classification")
 
@@ -10,7 +12,7 @@ pipe = pipeline("audio-classification", model="dima806/music_genres_classificati
 def shorten(filepath: str, duration: int):
     waveform, sample_rate = librosa.load(filepath, sr=None, duration=duration)
     # Save the waveform to a temporary file to use with the pipeline
-    temp_filepath = "temp_audio.wav"
+    temp_filepath = ".tmp-" + os.path.basename(filepath)
     sf.write(temp_filepath, waveform, sample_rate)
 
     return temp_filepath
