@@ -170,12 +170,6 @@ def combine(file1, file2):
     write_audio_data(audiodata1, "temp1.wav")
     write_audio_data(audiodata2, "temp2.wav")
 
-    tempaudio = read_file("temp1.wav")
-    audiodata1 = pitch_shift(
-        tempaudio, find_key_difference(tempaudio, read_file("temp2.wav"))
-    )
-    write_audio_data(audiodata1, "temp1.wav")
-
     merged = merge_audio("temp1.wav", "temp2.wav")
     write_audio_data(merged[0], "out.wav")
 
@@ -185,4 +179,4 @@ if __name__ == "__main__":
     file2 = "Pixelated Decay.wav"
     file3 = "H3ll0,W0rlD Export 4.wav"
 
-    combine(file1, file3)
+    combine(file2, file3)
