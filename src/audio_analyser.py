@@ -93,6 +93,11 @@ def merge_audio(audiofile1, audiofile2):
     merged.normalize()
     return read_file("temp1.wav")
 
+def get_harmonic_data(audiodata):
+    return librosa.decompose.hpss(librosa.stft(audiodata[0]))[0]
+
+def get_percussion_data(audiodata):
+    return librosa.decompose.hpss(librosa.stft(audiodata[0]))[1]
 
 def average_volume(audiodata):
     return np.mean((np.abs(audiodata[0])))
