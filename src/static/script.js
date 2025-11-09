@@ -108,6 +108,9 @@ input.addEventListener('change', () => {
 
         new_files.push(info);
 
+        if (new_files.length == files.length) {
+            document.getElementById("collide").style.display = "";
+        }
         
         meta.textContent = parts.join(' • ');
       } else {
@@ -123,9 +126,6 @@ input.addEventListener('change', () => {
   });
 
   
-  if (files.length != 0) {
-      document.getElementById("collide").style.display = "";
-  }
 
   
   // reset input so same files can be selected again if desired
@@ -135,6 +135,7 @@ input.addEventListener('change', () => {
 let collide = document.getElementById("collide");
 
 collide.addEventListener('click', () => {
+  collide.textContent = "Colliding..."
   fetch('/collide', {
         method: 'POST', // Use the POST method to send data
         headers: {
@@ -142,9 +143,9 @@ collide.addEventListener('click', () => {
         },
         body: JSON.stringify(new_files), // Convert the object to JSON
     })
-    .then(response => response.blob()) // Parse the JSON response
-    .then(blob => {
-      const audioUrl = URL.createObjectURL(blob);
+    .then(response => response.json()) // Parse the JSON response
+    .then(responseJson => {
+      const audioUrl = `data:audio/wav;base64,${responseJson.file}`;
 
         const audioElement = document.getElementById("audio");
         audioElement.src = audioUrl;
@@ -152,8 +153,20 @@ collide.addEventListener('click', () => {
 
         audioElement.style.display = ""
 
+        let meta = document.getElementById("audio-meta");
+
+        let info = responseJson;
+        const parts = [];
+        if (info.genre) parts.push(`Genre: ${info.genre}`);
+        if (typeof info.tempo !== 'undefined') parts.push(`Tempo: ${info.tempo}`);
+
+        new_files.push(info);
+
+        meta.textContent = parts.join(' • ');
+
         // Optionally, play the audio automatically
         audioElement.play();
+        collide.textContent = "Collide!";
     })
     .catch((error) => {
         console.error('Error:', error); // Handle any errors

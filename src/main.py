@@ -1,4 +1,5 @@
 from flask import Flask, redirect, render_template, request
+from pydub.audio_segment import base64
 from werkzeug.utils import secure_filename
 import uuid
 import os
@@ -47,21 +48,29 @@ def upload_file():
 def collide():
     data = request.get_json()
 
-    file_data = []
+    main = None
     for file in data:
         if file.get("filename"):
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.get("filename"))
             if os.path.exists(file_path) and file_path.startswith(
                 app.config["UPLOAD_FOLDER"]
             ):  # TODO: probably fails with relative paths
-                with open(file_path, "rb") as f:
-                    data = f.read()
-                    return data
-                    file_data.append(data)
+                if main is None:
+                    main = file_path
+                else:
+                    audio_analyser.combine(main, file_path)
+                    main = "out.wav"
 
+    main2 = genre_detection.shorten(main, 6)
+    tempo = audio_analyser.get_bpm(audio_analyser.read_file(main2))
+    genre = genre_detection.classify(main2).title()
     # do some fancy processing with file_data, then return some data back
     # return file_data[0]
-    return data
+    return {
+        "tempo": round(int(tempo), -1),
+        "genre": genre,
+        "file": base64.b64encode(open(main, "rb").read()).decode("utf-8"),
+    }
 
 
 if __name__ == "__main__":
