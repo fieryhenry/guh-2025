@@ -55,6 +55,9 @@ def pitch_shift(audiodata, steps):
     print(f"Pitch shift by {steps} steps")
     return librosa.effects.pitch_shift(y=audiodata[0], sr=audiodata[1], n_steps=steps)
 
+def pitch_shift2(audiodata, steps):
+    new_sample_rate = int(sound.frame_rate) * (2 ** (1/12 * steps))
+
 
 def pitch_match(audiodata1, audiodata2):
     difference = find_key_difference(audiodata1, audiodata2)
@@ -81,6 +84,10 @@ def merge_audio(audiofile1, audiofile2):
     audio2 = AudioSegment.from_file(audiofile2, format="wav")
     audio1.normalize()
     audio2.normalize()
+    if (librosa.get_duration(audio2) > librosa.get_duration(audio1)):
+        audio1,audio2 = audio2, audio1
+
+    audio1 += 5
     merged = audio1.overlay(audio2)
     merged.export("temp1.wav", format="wav")
     merged.normalize()
@@ -161,4 +168,4 @@ if __name__ == "__main__":
     file2 = "Pixelated Decay.wav"
     file3 = "H3ll0,W0rlD Export 4.wav"
 
-    combine(file2, file3)
+    combine(file1, file3)
