@@ -55,8 +55,9 @@ def pitch_shift(audiodata, steps):
     print(f"Pitch shift by {steps} steps")
     return librosa.effects.pitch_shift(y=audiodata[0], sr=audiodata[1], n_steps=steps)
 
+
 def pitch_shift2(audiodata, steps):
-    new_sample_rate = int(sound.frame_rate) * (2 ** (1/12 * steps))
+    new_sample_rate = int(sound.frame_rate) * (2 ** (1 / 12 * steps))
 
 
 def pitch_match(audiodata1, audiodata2):
@@ -84,8 +85,16 @@ def merge_audio(audiofile1, audiofile2):
     audio2 = AudioSegment.from_file(audiofile2, format="wav")
     audio1.normalize()
     audio2.normalize()
-    if (librosa.get_duration(audio2) > librosa.get_duration(audio1)):
-        audio1,audio2 = audio2, audio1
+
+    audio1.export("temp1.wav", format="wav")
+    audio2.export("temp2.wav", format="wav")
+
+    temp1 = read_file("temp1.wav")
+    temp2 = read_file("temp2.wav")
+    if librosa.get_duration(y=temp2[0], sr=temp2[1]) > librosa.get_duration(
+        y=temp1[0], sr=temp2[1]
+    ):
+        audio1, audio2 = audio2, audio1
 
     audio1 += 5
     merged = audio1.overlay(audio2)
@@ -93,11 +102,14 @@ def merge_audio(audiofile1, audiofile2):
     merged.normalize()
     return read_file("temp1.wav")
 
+
 def get_harmonic_data(audiodata):
     return librosa.decompose.hpss(librosa.stft(audiodata[0]))[0]
 
+
 def get_percussion_data(audiodata):
     return librosa.decompose.hpss(librosa.stft(audiodata[0]))[1]
+
 
 def average_volume(audiodata):
     return np.mean((np.abs(audiodata[0])))
