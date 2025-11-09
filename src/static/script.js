@@ -174,9 +174,11 @@ collide.addEventListener('click', () => {
 
         const audioElement = document.getElementById("audio");
         audioElement.src = audioUrl;
+
+        const audioWrapper = document.getElementById("audio-wrapper");
        
 
-        audioElement.style.display = ""
+        audioWrapper.style.display = ""
 
         let meta = document.getElementById("audio-meta");
 
@@ -195,4 +197,22 @@ collide.addEventListener('click', () => {
         console.error('Error:', error); // Handle any errors
     });
   
+});
+
+const downloadBtn = document.querySelector('.download-btn');
+const audioElement = document.getElementById('audio');
+
+// Add event listener to the download button
+downloadBtn.addEventListener('click', () => {
+  const audioSrc = audioElement.src; // Get the audio source URL
+  if (audioSrc) {
+    const a = document.createElement('a'); // Create a temporary anchor element
+    a.href = audioSrc; // Set the href to the audio source
+    a.download = 'audio-file.wav'; // Set the download attribute
+    document.body.appendChild(a); // Append the anchor to the body
+    a.click(); // Programmatically click the anchor to trigger the download
+    document.body.removeChild(a); // Remove the anchor from the DOM
+  } else {
+    alert('No audio file available for download.'); // Alert if no audio is found
+  }
 });

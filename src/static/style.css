@@ -60,6 +60,7 @@ header {
   padding: 12px 20px;
   background-color: #1e90ff; /* Button color */
   color: white;
+  width: 100%;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -112,4 +113,51 @@ audio {
 
 .meta {
   padding: 5px;
+}
+
+/* .download-btn { */
+/* display: inline-block; */
+/* padding: 10px 20px; */
+/* background-color: #1e90ff; /* Button color */
+/* color: white; */
+/* border-radius: 6px; */
+/* border: none; */
+/* cursor: pointer; */
+/* transition: */
+/* background-color 0.3s ease, */
+/* transform 0.2s ease; */
+/* text-align: center; /* Center text */
+/* } */
+
+.download-btn {
+  /* margin-top: 20px; /* Space above button */
+  padding: 12px 20px;
+  background-color: #1e90ff; /* Button color */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.download-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.download-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.5);
+}
+
+.audio-wrapper {
+  margin-top: 20px;
+  border: 1px dashed #bbb;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f1f1f1; /* Light background for uploader */
 }
