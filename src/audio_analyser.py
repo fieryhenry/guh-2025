@@ -22,8 +22,11 @@ def get_key(audiodata):
     return estimated_key
 
 
-def split_audio(audiodata, start, duration):
-    return audiodata[start * audiodata[1] : duration * audiodata[1]]
+def split_audio(audiodata, start, end):
+    return (
+        audiodata[0][round(start * audiodata[1]) : round(end * audiodata[1])],
+        audiodata[1],
+    )
 
 
 def match_bpm(audiosource, audioreference):
@@ -61,6 +64,7 @@ def merge_audio(audiofile1, audiofile2):
 def average_volume(audiodata):
     return np.mean((np.abs(audiodata[0])))
 
+
 def scale_volume(source_audiodata, reference_audiodata):
     write_audio_data(source_audiodata, "temp1.wav")
     write_audio_data(source_audiodata, "temp2.wav")
@@ -68,11 +72,35 @@ def scale_volume(source_audiodata, reference_audiodata):
     file2 = AudioSegment.from_wav("temp2.wav")
 
     print(file2.max, file1.max)
-    scaled = file1.apply_gain(file2.max- file1.max)
+    scaled = file1.apply_gain(file2.max - file1.max)
 
-    scaled.export("temp1.wav",format="wav")
+    scaled.export("temp1.wav", format="wav")
     return read_file("temp1.wav")
-    
+
+
+def split_bpm(audiodata):
+    beats = librosa.beat.beat_track(y=audiodata[0], sr=audiodata[1])[1]
+    return librosa.frames_to_time(beats, sr=audiodata[1])
+
+
+def match_bpm_fine(audiosource, audioreference):
+    audiosource_split = split_bpm(audiosource)
+    audioreference_split = split_bpm(audioreference)
+
+    output = []
+    for i in range(min(len(audiosource_split), len(audioreference_split)) - 1):
+        output.append(
+            match_bpm(
+                split_audio(
+                    audiosource, audiosource_split[i], audiosource_split[i + 1]
+                ),
+                split_audio(
+                    audioreference, audioreference_split[i], audioreference_split[i + 1]
+                ),
+            )
+        )
+
+    return output
 
 
 if __name__ == "__main__":
@@ -91,8 +119,14 @@ if __name__ == "__main__":
     )
     write_audio_data(pitch_match, "out.wav")
 
-    tempo,beats = librosa.beat.beat_track(y=read_file(file1)[0], sr=read_file(file1)[1])
-    tempo2,beats2 = librosa.beat.beat_track(y=read_file(file2)[0], sr=read_file(file2)[1])
+    bpm_match = match_bpm_fine(read_file("out.wav"), read_file(file1))
+
+    tempo, beats = librosa.beat.beat_track(
+        y=read_file(file1)[0], sr=read_file(file1)[1]
+    )
+    tempo2, beats2 = librosa.beat.beat_track(
+        y=read_file(file2)[0], sr=read_file(file2)[1]
+    )
 
     print(beats)
     print(beats2)
