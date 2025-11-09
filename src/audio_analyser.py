@@ -65,7 +65,7 @@ def pitch_match(audiodata1, audiodata2):
 
     return (
         pitch_shift(audiodata1, difference // 2),
-        pitch_shift(audiodata2, difference_half),
+        pitch_shift(audiodata2, -difference_half),
     )
 
 
@@ -83,6 +83,7 @@ def merge_audio(audiofile1, audiofile2):
     audio2.normalize()
     merged = audio1.overlay(audio2)
     merged.export("temp1.wav", format="wav")
+    merged.normalize()
     return read_file("temp1.wav")
 
 
