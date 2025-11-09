@@ -10,7 +10,8 @@ def read_file(filename):
 
 
 def get_bpm(audiodata):
-    return librosa.beat.beat_track(y=audiodata[0], sr=audiodata[1])[0][0]
+    output = librosa.beat.beat_track(y=audiodata[0], sr=audiodata[1])[0][0]
+    return output
 
 
 def get_key(audiodata):
@@ -31,8 +32,19 @@ def split_audio(audiodata, start, end):
 
 def match_bpm(audiosource, audioreference):
     multiply_factor = get_bpm(audioreference) / get_bpm(audiosource)
-    print(multiply_factor)
     return librosa.effects.time_stretch(audiosource[0], rate=multiply_factor)
+
+
+def match_bpm_average(audiodata1, audiodata2):
+    multiply_factor = get_bpm(audiodata2) / get_bpm(audiodata1)
+    audio1 = librosa.effects.time_stretch(
+        audiodata1[0], rate=(1 + (multiply_factor - 1) / 2)
+    )
+    audio2 = librosa.effects.time_stretch(
+        audiodata2[0], rate=(1 + (1 - multiply_factor) / 2)
+    )
+
+    return (audio1, audio2)
 
 
 def write_audio_data(audiodata, output_file, sample_rate=int(44100 / 2)):
@@ -42,6 +54,19 @@ def write_audio_data(audiodata, output_file, sample_rate=int(44100 / 2)):
 def pitch_shift(audiodata, steps):
     print(f"Pitch shift by {steps} steps")
     return librosa.effects.pitch_shift(y=audiodata[0], sr=audiodata[1], n_steps=steps)
+
+
+def pitch_match(audiodata1, audiodata2):
+    difference = find_key_difference(audiodata1, audiodata2)
+    if difference % 2 == 0:
+        difference_half = difference // 2
+    else:
+        difference_half = difference // 2 + 1
+
+    return (
+        pitch_shift(audiodata1, difference // 2),
+        pitch_shift(audiodata2, difference_half),
+    )
 
 
 def find_key_difference(source_audiodata, reference_audiodata):
@@ -87,20 +112,47 @@ def match_bpm_fine(audiosource, audioreference):
     audiosource_split = split_bpm(audiosource)
     audioreference_split = split_bpm(audioreference)
 
-    output = []
+    output = np.array(audiosource[0])
     for i in range(min(len(audiosource_split), len(audioreference_split)) - 1):
-        output.append(
-            match_bpm(
-                split_audio(
-                    audiosource, audiosource_split[i], audiosource_split[i + 1]
-                ),
-                split_audio(
-                    audioreference, audioreference_split[i], audioreference_split[i + 1]
-                ),
-            )
+        np.append(
+            output,
+            (
+                match_bpm(
+                    split_audio(
+                        audiosource, audiosource_split[i], audiosource_split[i + 1]
+                    ),
+                    split_audio(
+                        audioreference,
+                        audioreference_split[i],
+                        audioreference_split[i + 1],
+                    ),
+                )[0]
+            ),
         )
 
-    return output
+    return (np.array(output), audiosource[1])
+
+
+def combine(file1, file2):
+    audio1 = read_file(file1)
+    audio2 = read_file(file2)
+
+    audiodata1, audiodata2 = match_bpm_average(audio1, audio2)
+    write_audio_data(audiodata1, "temp1.wav")
+    write_audio_data(audiodata2, "temp2.wav")
+
+    audiodata1, audiodata2 = pitch_match(audio1, audio2)
+    write_audio_data(audiodata1, "temp1.wav")
+    write_audio_data(audiodata2, "temp2.wav")
+
+    tempaudio = read_file("temp1.wav")
+    audiodata1 = pitch_shift(
+        tempaudio, find_key_difference(tempaudio, read_file("temp2.wav"))
+    )
+    write_audio_data(audiodata1, "temp1.wav")
+
+    merged = merge_audio("temp1.wav", "temp2.wav")
+    write_audio_data(merged[0], "out.wav")
 
 
 if __name__ == "__main__":
@@ -108,28 +160,4 @@ if __name__ == "__main__":
     file2 = "Pixelated Decay.wav"
     file3 = "H3ll0,W0rlD Export 4.wav"
 
-    print(get_key(split_audio(read_file(file3), 0, 30)))
-
-    bpm_match = match_bpm(read_file(file2), read_file(file1))
-    write_audio_data(bpm_match, "out.wav")
-
-    pitch_match = pitch_shift(
-        read_file("out.wav"),
-        find_key_difference(read_file("out.wav"), read_file(file1)),
-    )
-    write_audio_data(pitch_match, "out.wav")
-
-    bpm_match = match_bpm_fine(read_file("out.wav"), read_file(file1))
-
-    tempo, beats = librosa.beat.beat_track(
-        y=read_file(file1)[0], sr=read_file(file1)[1]
-    )
-    tempo2, beats2 = librosa.beat.beat_track(
-        y=read_file(file2)[0], sr=read_file(file2)[1]
-    )
-
-    print(beats)
-    print(beats2)
-
-    merged = merge_audio(file1, "out.wav")
-    write_audio_data(merged[0], "out.wav")
+    combine(file2, file3)
