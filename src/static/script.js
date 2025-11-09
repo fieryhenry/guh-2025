@@ -16,6 +16,20 @@ function createFileRow(file) {
   const name = document.createElement('div');
   name.textContent = file.name;
 
+  const drums = document.createElement('div');
+  drums.className = "drums";
+
+  const drumsCheckbox = document.createElement('input');
+  drumsCheckbox.type = 'checkbox';
+  drumsCheckbox.className = "drum-checkbox"
+  drumsCheckbox.id = `drums-${file.name}`;
+  const checkboxLabel = document.createElement('label');
+  checkboxLabel.textContent = 'Only Mix Percussion';
+  checkboxLabel.htmlFor = drumsCheckbox.id;
+
+  drums.appendChild(drumsCheckbox);
+  drums.appendChild(checkboxLabel);
+
   const progWrap = document.createElement('div');
   progWrap.className = "prog-wrap";
   const prog = document.createElement('div');
@@ -34,8 +48,11 @@ function createFileRow(file) {
   topRow.appendChild(name);
   topRow.appendChild(progWrap);
   topRow.appendChild(status);
+
+
   li.appendChild(topRow);
   li.appendChild(meta);
+  li.appendChild(drums);
 
   fileList.appendChild(li);
   return { li, prog, status, meta, progWrap };
@@ -106,6 +123,7 @@ input.addEventListener('change', () => {
         if (typeof info.tempo !== 'undefined') parts.push(`Tempo: ${info.tempo}`);
         let filename = info.filename;
 
+        info.original_filename = file.name;
         new_files.push(info);
 
         if (new_files.length == files.length) {
@@ -136,12 +154,19 @@ let collide = document.getElementById("collide");
 
 collide.addEventListener('click', () => {
   collide.textContent = "Colliding..."
+  const filesWithDrumFlag = new_files.map(file => {
+    const checkbox = document.getElementById(`drums-${file.original_filename}`); // Assuming file has a filename property
+    return {
+      ...file,
+      drumsOnly: checkbox ? checkbox.checked : false // Read the checkbox value, default to false if not found
+    };
+  });
   fetch('/collide', {
         method: 'POST', // Use the POST method to send data
         headers: {
             'Content-Type': 'application/json', // Specify the content type
         },
-        body: JSON.stringify(new_files), // Convert the object to JSON
+        body: JSON.stringify(filesWithDrumFlag), // Convert the object to JSON
     })
     .then(response => response.json()) // Parse the JSON response
     .then(responseJson => {
@@ -159,8 +184,6 @@ collide.addEventListener('click', () => {
         const parts = [];
         if (info.genre) parts.push(`Genre: ${info.genre}`);
         if (typeof info.tempo !== 'undefined') parts.push(`Tempo: ${info.tempo}`);
-
-        new_files.push(info);
 
         meta.textContent = parts.join(' • ');
 

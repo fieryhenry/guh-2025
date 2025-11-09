@@ -55,6 +55,8 @@ def collide():
             if os.path.exists(file_path) and file_path.startswith(
                 app.config["UPLOAD_FOLDER"]
             ):  # TODO: probably fails with relative paths
+                low_pass = file.get("drumsOnly")
+                print(low_pass)
                 if main is None:
                     main = file_path
                 else:
@@ -64,8 +66,6 @@ def collide():
     main2 = genre_detection.shorten(main, 6)
     tempo = audio_analyser.get_bpm(audio_analyser.read_file(main2))
     genre = genre_detection.classify(main2).title()
-    # do some fancy processing with file_data, then return some data back
-    # return file_data[0]
     return {
         "tempo": round(int(tempo), -1),
         "genre": genre,

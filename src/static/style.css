@@ -25,6 +25,12 @@ header {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 
+.drums {
+  /* display: flex; */
+  /* gap: 5px; */
+  display: none;
+}
+
 .uploader {
   border: 1px dashed #bbb;
   padding: 20px;
