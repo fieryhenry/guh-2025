@@ -2,6 +2,8 @@ import librosa
 import numpy as np
 import soundfile as sf
 from pydub import AudioSegment
+import pyequalizer.Filter as Filter
+import audio_dspy as adsp
 
 
 def read_file(filename):
@@ -77,7 +79,9 @@ def find_key_difference(source_audiodata, reference_audiodata):
     key1 = get_key(source_audiodata)
     key2 = get_key(reference_audiodata)
 
-    return librosa.note_to_midi(key2) - librosa.note_to_midi(key1)
+    difference = librosa.note_to_midi(key2) - librosa.note_to_midi(key1)
+    print(f"Pitch difference: {difference}")
+    return difference
 
 
 def merge_audio(audiofile1, audiofile2):
@@ -96,7 +100,7 @@ def merge_audio(audiofile1, audiofile2):
     ):
         audio1, audio2 = audio2, audio1
 
-    audio1 += 5
+    audio1 += 1
     merged = audio1.overlay(audio2)
     merged.export("temp1.wav", format="wav")
     merged.normalize()
@@ -104,11 +108,22 @@ def merge_audio(audiofile1, audiofile2):
 
 
 def get_harmonic_data(audiodata):
-    return librosa.decompose.hpss(librosa.stft(audiodata[0]))[0]
+    return (librosa.effects.harmonic(audiodata[0]), audiodata[1])
 
 
 def get_percussion_data(audiodata):
-    return librosa.decompose.hpss(librosa.stft(audiodata[0]))[1]
+    return (librosa.effects.percussive(audiodata[0]), audiodata[1])
+
+
+def lowpass(audiofile):
+    audiodata = read_file(audiofile)
+    b,a = adsp.design_LPF2(200,3,44100)
+    filter = adsp.Filter(2,44100)
+    filter.set_coefs(b,a)
+    filter.reset()
+    data = filter.process_block(audiodata[0])
+
+    return (data, audiodata[1])
 
 
 def average_volume(audiodata):
@@ -158,7 +173,7 @@ def match_bpm_fine(audiosource, audioreference):
     return (np.array(output), audiosource[1])
 
 
-def combine(file1, file2):
+def combine(file1, file2, lowpass1=False, lowpass2=False):
     audio1 = read_file(file1)
     audio2 = read_file(file2)
 
@@ -170,6 +185,14 @@ def combine(file1, file2):
     write_audio_data(audiodata1, "temp1.wav")
     write_audio_data(audiodata2, "temp2.wav")
 
+    if lowpass1:
+        audio1 = lowpass("temp1.wav")
+        write_audio_data(audio1[0], "temp1.wav")
+
+    if lowpass2:
+        audio2 = lowpass("temp2.wav")
+        write_audio_data(audio2[0], "temp2.wav")
+
     merged = merge_audio("temp1.wav", "temp2.wav")
     write_audio_data(merged[0], "out.wav")
 
@@ -178,5 +201,6 @@ if __name__ == "__main__":
     file1 = "piano Edit 1 Export 1.wav"
     file2 = "Pixelated Decay.wav"
     file3 = "H3ll0,W0rlD Export 4.wav"
+    file4 = "Pixelated Decay - The Clocktower.mp3"
 
-    combine(file2, file3)
+    combine(file3, file4, True)
