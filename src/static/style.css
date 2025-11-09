@@ -161,3 +161,28 @@ audio {
   border-radius: 8px;
   background-color: #f1f1f1; /* Light background for uploader */
 }
+
+.remove-btn {
+  /* margin-top: 20px; /* Space above button */
+  padding: 6px 10px;
+  background-color: #1e90ff; /* Button color */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  /* width: 100%; */
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.remove-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.remove-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.5);
+}

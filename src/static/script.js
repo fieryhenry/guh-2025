@@ -49,10 +49,33 @@ function createFileRow(file) {
   topRow.appendChild(progWrap);
   topRow.appendChild(status);
 
+    // Create the remove button
+  const removeButton = document.createElement('button');
+  removeButton.textContent = 'Remove';
+  removeButton.className = 'remove-btn';
+  
+  // Add event listener to remove the file row on button click
+  removeButton.addEventListener('click', () => {
+    fileList.removeChild(li);
+
+        // Remove the file from new_files
+    new_files = new_files.filter(f => f.original_filename !== file.name);
+
+    // Remove the file from the input files array
+    // filesArray = files.filter(f => f.name !== file.name);
+
+    if (new_files.length == 0){
+      document.getElementById('collide').style.display = "none";
+      
+    }
+    
+  });
+
 
   li.appendChild(topRow);
   li.appendChild(meta);
   li.appendChild(drums);
+  li.appendChild(removeButton);  // Append the remove button to the list item
 
   fileList.appendChild(li);
   return { li, prog, status, meta, progWrap };
@@ -76,7 +99,7 @@ function uploadSingleFile(file, onProgress) {
         // server returns an object like {"<filename>": {"genre":"x","tempo":120}}
         resolve(xhr.response);
       } else {
-        reject(new Error('Upload failed: ' + xhr.status));
+        reject(new Error('Invalid audio file '));
       }
     };
 
@@ -93,7 +116,7 @@ var new_files = [];
 
 input.addEventListener('change', () => {
   // fileList.innerHTML = '';
-  const files = Array.from(input.files);
+  var files = Array.from(input.files);
   if (files.length === 0) {
     // summary.textContent = '';
     return;
