@@ -24,13 +24,17 @@ def index():
 def upload_file():
     file = request.files["file"]
     if file.filename == "":
-        return redirect(request.url)
+        return "", 400
     if file:
-        filename = secure_filename(f"{file.filename}-{uuid.uuid4()}")
+        filename = secure_filename(f"{uuid.uuid4()}-{file.filename}")
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(path)
 
-        path = genre_detection.shorten(path, 6)
+        try:
+            path = genre_detection.shorten(path, 6)
+        except Exception as e:
+            print("error:", e)
+            return "", 400
 
         tempo = audio_analyser.get_bpm(audio_analyser.read_file(path))
 
@@ -41,7 +45,7 @@ def upload_file():
             "tempo": round(int(tempo), -1),
             "filename": filename,
         }
-    return redirect(request.url)
+    return "", 400
 
 
 @app.route("/collide", methods=["POST"])
@@ -55,17 +59,19 @@ def collide():
             if os.path.exists(file_path) and file_path.startswith(
                 app.config["UPLOAD_FOLDER"]
             ):  # TODO: probably fails with relative paths
+                low_pass = file.get("drumsOnly")
+                print(low_pass)
                 if main is None:
                     main = file_path
                 else:
                     audio_analyser.combine(main, file_path)
                     main = "out.wav"
 
+    if main is None:
+        return "", 400
     main2 = genre_detection.shorten(main, 6)
     tempo = audio_analyser.get_bpm(audio_analyser.read_file(main2))
     genre = genre_detection.classify(main2).title()
-    # do some fancy processing with file_data, then return some data back
-    # return file_data[0]
     return {
         "tempo": round(int(tempo), -1),
         "genre": genre,
